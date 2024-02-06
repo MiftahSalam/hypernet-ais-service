@@ -33,7 +33,7 @@ else {
 
 SOURCES += \
     domain/ais/ais_target_model.cpp \
-    infra/database/track/memory/trackrepository_mem.cpp \
+    infra/database/ais/memory/trackrepository_mem.cpp \
     usecase/alarm/alarm.cpp \
     usecase/alarm/alarmmanager.cpp \
     usecase/alarm/gzalarm.cpp \
@@ -54,7 +54,7 @@ SOURCES += \
 HEADERS += \
     domain/ais/ais_target_model.h \
     domain/ais/ais_target_repository.h \
-    infra/database/track/memory/trackrepository_mem.h \
+    infra/database/ais/memory/trackrepository_mem.h \
     usecase/alarm/alarm.h \
     usecase/alarm/alarmmanager.h \
     usecase/alarm/gzalarm.h \
