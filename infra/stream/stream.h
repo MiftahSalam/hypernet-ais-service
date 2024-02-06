@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "mqttdevicewrapper.h"
+#include "serial_device_wrapper.h"
 
 class Stream : public QObject
 {

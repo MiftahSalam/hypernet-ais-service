@@ -1,81 +1,70 @@
-#include "mqttdevicewrapper.h"
+#include "serial_device_wrapper.h"
 
-QMap<QString, MqttDeviceWrapper*> MqttDeviceWrapper::m_wrappers;
+#include "qdebug.h"
 
-MqttDeviceWrapper::MqttDeviceWrapper(QObject *parent):
-    DeviceWrapper(parent), m_idCounter(0)
+SerialDeviceWrapper::SerialDeviceWrapper(QObject *parent):
+    DeviceWrapper(parent)
 {
-    m_publisher = nullptr;
-    m_subsciber = nullptr;
+    m_serial = new QSerialPort(this);
 
     qDebug()<<Q_FUNC_INFO;
 }
 
-MqttDeviceWrapper::~MqttDeviceWrapper()
+SerialDeviceWrapper::~SerialDeviceWrapper()
 {
-    delete m_publisher;
-    delete  m_subsciber;
-    m_wrappers.clear();
-}
-MqttDeviceWrapper* MqttDeviceWrapper::GetInstance(const QString config)
-{
-    qDebug()<<Q_FUNC_INFO<<"config"<<config;
-    if(!m_wrappers.contains(config))
-    {
-        MqttDeviceWrapper* wrapper = new MqttDeviceWrapper(nullptr);
-        bool wrap_init = wrapper->InitConfig(config);
-        if(!wrap_init)
-        {
-            delete wrapper;
-            return nullptr;
-        }
-        m_wrappers.insert(config,wrapper);
-    }
-    else
-    {
-        if(config.isEmpty()) return nullptr;
-    }
-
-    return m_wrappers.value(config);
 }
 
-bool MqttDeviceWrapper::InitConfig(const QString config)
+bool SerialDeviceWrapper::InitConfig(const QString config)
 {
     bool ret_val = false;
-#if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
-    QStringList config_list = config.split(":",QString::SkipEmptyParts);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QStringList config_list = config.split(":", Qt::SkipEmptyParts);
 #else
     QStringList config_list = config.split(":",QString::SkipEmptyParts);
 #endif
-    if(config_list.size() == 3)
+
+    if(config_list.size() == 6)
     {
         ret_val = true;
 
-        m_mqttConfig.host = QHostAddress(config_list.at(0));
-        m_mqttConfig.port = config_list.at(1).toUShort();
-        m_defaultTopic = config_list.at(2);
-
-        if(m_publisher) delete m_publisher;
-        if(m_subsciber) delete m_subsciber;
-
-        m_publisher = new Publisher(this,m_mqttConfig.host,m_mqttConfig.port, m_defaultTopic);
-        m_subsciber = new Subscriber(this,m_mqttConfig.host,m_mqttConfig.port, m_defaultTopic);
-        connect(m_subsciber,&Subscriber::SignalOnReceived, this, &MqttDeviceWrapper::receiveData);
+        m_serialConfig.portname = config_list.at(0);
+        m_serialConfig.baudrate = str2Baud(config_list.at(1));
+        m_serialConfig.databits = str2DataBit(config_list.at(2));
+        m_serialConfig.stopbits = str2StopBit(config_list.at(3));
+        m_serialConfig.parity = str2parity(config_list.at(4));
+        m_serialConfig.flowcontrol = str2flwCtrl(config_list.at(5));
     }
     else qDebug()<<Q_FUNC_INFO<<"invalid config"<<config;
 
     return ret_val;
 }
 
-void MqttDeviceWrapper::Reconnect()
+
+void SerialDeviceWrapper::Reconnect()
 {
-    if(!m_publisher->isConnectedToHost()) m_publisher->connectToHost();
-    if(!m_subsciber->isConnectedToHost()) m_subsciber->connectToHost();
+    disconnect(m_serial, &QSerialPort::readyRead, this, &SerialDeviceWrapper::receiveData);
+    if (m_serial->isOpen()) m_serial->close();
+
+    m_serial->setPortName(m_serialConfig.portname);
+    if(m_serial->open(QIODevice::ReadOnly))
+    {
+        connect(m_serial, &QSerialPort::readyRead, this, &SerialDeviceWrapper::receiveData);
+
+        m_serial->setBaudRate(m_serialConfig.baudrate);
+        m_serial->setDataBits(m_serialConfig.databits);
+        m_serial->setStopBits(m_serialConfig.stopbits);
+        m_serial->setParity(m_serialConfig.parity);
+        m_serial->setFlowControl(m_serialConfig.flowcontrol);
+
+        qInfo()<<Q_FUNC_INFO<<"open serial port"<<m_serial->portName();
+    }
+    else qWarning()<<Q_FUNC_INFO<<"cannot open serial with error"<<m_serial->errorString();
+
 }
 
-DeviceWrapper::DeviceStatus MqttDeviceWrapper::GetStatus()
+DeviceWrapper::DeviceStatus SerialDeviceWrapper::GetStatus()
 {
-    if(m_publisher->isConnectedToHost() || m_subsciber->isConnectedToHost())
+    if(m_serial->isOpen())
     {
         qint64 now = QDateTime::currentSecsSinceEpoch();
 
@@ -87,133 +76,95 @@ DeviceWrapper::DeviceStatus MqttDeviceWrapper::GetStatus()
     return  m_currentStatus;
 }
 
-void MqttDeviceWrapper::receiveData(QMQTT::Message message)
+void SerialDeviceWrapper::receiveData(QByteArray message)
 {
-    QString payload = QString::fromUtf8(message.payload());
-    QString topic = message.topic();
-//    _currentData = payload;
-    qWarning()<<Q_FUNC_INFO<<"payload"<<payload<<"topic"<<topic;
+    QString payload = QString::fromUtf8(message);
+
+    qDebug()<<Q_FUNC_INFO<<"payload"<<payload;
     m_last_data_time = QDateTime::currentSecsSinceEpoch();
-    emit ReadyRead(topic+MQTT_MESSAGE_SEPARATOR+payload);
+    emit ReadyRead(payload);
 }
 
-void MqttDeviceWrapper::ChangeConfig(const QString command)
+void SerialDeviceWrapper::ChangeConfig(const QString command)
 {
-    QStringList cmd_list = command.split(":");
-    if(cmd_list.size() != 3)
-    {
-        qWarning()<<Q_FUNC_INFO<<"invalid command data";
-        return;
-    }
-
-    if(cmd_list.at(0) == "publisher")
-    {
-        if(cmd_list.at(1) == "topic-add")
-        {
-            m_publisher->AddTopic(cmd_list.at(2));
-        }
-        else if(cmd_list.at(1) == "topic-rm")
-        {
-            m_publisher->RemoveTopic(cmd_list.at(2));
-        }
-        else qWarning()<<Q_FUNC_INFO<<"invalid command item"<<cmd_list.at(1);
-    }
-    else if(cmd_list.at(0) == "subsciber")
-    {
-        if(cmd_list.at(1) == "topic-add")
-        {
-            m_subsciber->AddTopic(cmd_list.at(2));
-        }
-        else if(cmd_list.at(1) == "topic-rm")
-        {
-            m_subsciber->RemoveTopic(cmd_list.at(2));
-        }
-        else qWarning()<<Q_FUNC_INFO<<"invalid command item"<<cmd_list.at(1);
-    }
-    else qWarning()<<Q_FUNC_INFO<<"invalid command instance"<<cmd_list.at(0);
+    InitConfig(command);
 }
 
-void MqttDeviceWrapper::Write(const QString data)
+void SerialDeviceWrapper::Write(const QString data)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
-    QStringList format = data.split(MQTT_MESSAGE_SEPARATOR,QString::SkipEmptyParts);
-#else
-    QStringList format = data.split(MQTT_MESSAGE_SEPARATOR, Qt::SkipEmptyParts);
-#endif
-    if(format.size() == 2)
-    {
-        QMQTT::Message message(m_idCounter,format.at(0),format.at(1).toUtf8());
-        m_publisher->PublishData(message);
-    } else qDebug()<<Q_FUNC_INFO<<"invalid mqtt data"<<data;
+    if (m_serial->isOpen() && m_serial->isWritable()) m_serial->write(data.toUtf8());
+    else qWarning()<<Q_FUNC_INFO<<"cannot write serial with error"<<m_serial->errorString();
 }
 
-Subscriber::Subscriber(QObject *parent, const QHostAddress& host, const quint16 port, QString topic) :
-    MqttClient(parent,host,port,topic)
+QSerialPort::BaudRate SerialDeviceWrapper::str2Baud(QString baud)
 {
-    connect(this,&Subscriber::received,this,&Subscriber::SignalOnReceived);
+    if (baud == "4800")
+        return QSerialPort::Baud4800;
+    else if (baud == "9600")
+        return QSerialPort::Baud9600;
+    else if (baud =="19200")
+        return QSerialPort::Baud19200;
+    else if (baud == "34800")
+        return QSerialPort::Baud38400;
+    else if (baud == "57600")
+        return QSerialPort::Baud57600;
+    else if(baud == "115200")
+        return QSerialPort::Baud115200;
+    else
+        return QSerialPort::UnknownBaud; //invalid
 }
 
-Publisher::Publisher(QObject *parent, const QHostAddress& host, const quint16 port, QString topic) :
-    MqttClient (parent,host,port,topic)
+QSerialPort::DataBits SerialDeviceWrapper::str2DataBit(QString databit)
 {
+    if (databit == "8")
+        return QSerialPort::Data8;
+    else if (databit == "7")
+        return QSerialPort::Data7;
+    else if (databit == "6")
+        return QSerialPort::Data6;
+    else if(databit == "5")
+        return QSerialPort::Data5;
+    else
+        return QSerialPort::UnknownDataBits; //invalid
+
 }
 
-void Publisher::PublishData(QMQTT::Message message)
+QSerialPort::FlowControl SerialDeviceWrapper::str2flwCtrl(QString flwCtrl)
 {
-    publish(message);
+    if (flwCtrl == "No")
+        return QSerialPort::NoFlowControl;
+    else if (flwCtrl == "HW")
+        return QSerialPort::HardwareControl;
+    else if (flwCtrl == "SW")
+        return QSerialPort::SoftwareControl;
+    else
+        return QSerialPort::UnknownFlowControl; //invalid
 }
 
-MqttClient::MqttClient(QObject *parent,
-                                        const QHostAddress& host,
-                                        const quint16 port, QString topic) :
-    QMQTT::Client(host,port,parent), m_host(host), m_port(port)
-{    
-    connect(this,&MqttClient::connected,this,&MqttClient::onConnected);
-    connect(this,&MqttClient::disconnected,this,&MqttClient::onDisconnected);
-    connect(this,&MqttClient::subscribed,this,&MqttClient::onSubscribed);
-
-    connectToHost();
-
-    qDebug()<<Q_FUNC_INFO<<topic;
-    if(!topic.isEmpty()) AddTopic(topic);
-    else m_topic_list.clear();
-}
-
-void MqttClient::AddTopic(const QString topic)
+QSerialPort::Parity SerialDeviceWrapper::str2parity(QString parity)
 {
-    if(!m_topic_list.contains(topic))
-    {
-        qDebug()<<Q_FUNC_INFO<<topic;
-        m_topic_list.append(topic);
-        subscribe(topic);
-    }
+    if (parity == "0")
+        return QSerialPort::NoParity;
+    else if (parity == "2")
+        return QSerialPort::EvenParity;
+    else if (parity == "3")
+        return QSerialPort::OddParity;
+    else if (parity == "4")
+        return QSerialPort::SpaceParity;
+    else if (parity == "5")
+        return QSerialPort::MarkParity;
+    else
+        return QSerialPort::UnknownParity; //invalid
 }
 
-void MqttClient::RemoveTopic(const QString topic)
+QSerialPort::StopBits SerialDeviceWrapper::str2StopBit(QString stopBit)
 {
-    m_topic_list.removeOne(topic);
-    unsubscribe(topic);
-}
-
-void MqttClient::onConnected()
-{
-    foreach (QString topic, m_topic_list)
-    {
-        subscribe(topic);
-    }
-    qDebug()<<Q_FUNC_INFO;
-}
-
-void MqttClient::onDisconnected()
-{
-    foreach (QString topic, m_topic_list)
-    {
-        unsubscribe(topic);
-    }
-    qDebug()<<Q_FUNC_INFO;
-}
-
-void MqttClient::onSubscribed(const QString& topic, const quint8 qos)
-{
-    qDebug()<<Q_FUNC_INFO<<"topic"<<topic<<"qos"<<qos;
+    if (stopBit == "1")
+        return QSerialPort::OneStop;
+    else if (stopBit == "3")
+        return QSerialPort::OneAndHalfStop;
+    else if (stopBit == "2")
+        return QSerialPort::TwoStop;
+    else
+        return QSerialPort::UnknownStopBits; //invalid
 }

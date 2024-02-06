@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core network
+QT       += core network serial
 
 TEMPLATE = app
 
@@ -34,6 +34,7 @@ else {
 SOURCES += \
     domain/ais/ais_target_model.cpp \
     infra/database/ais/memory/trackrepository_mem.cpp \
+    infra/stream/serial_device_wrapper.cpp \
     usecase/alarm/alarm.cpp \
     usecase/alarm/alarmmanager.cpp \
     usecase/alarm/gzalarm.cpp \
@@ -46,15 +47,14 @@ SOURCES += \
     usecase/stream/arpasender.cpp \
     usecase/stream/navsensor.cpp \
     infra/stream/stream.cpp \
-    infra/stream/mqttdevicewrapper.cpp \
     infra/stream/devicewrapper.cpp \
-    infra/filterevent.cpp \
     shared/utils.cpp
 
 HEADERS += \
     domain/ais/ais_target_model.h \
     domain/ais/ais_target_repository.h \
     infra/database/ais/memory/trackrepository_mem.h \
+    infra/stream/serial_device_wrapper.h \
     usecase/alarm/alarm.h \
     usecase/alarm/alarmmanager.h \
     usecase/alarm/gzalarm.h \
@@ -66,9 +66,7 @@ HEADERS += \
     usecase/stream/arpasender.h \
     usecase/stream/navsensor.h \
     infra/stream/stream.h \
-    infra/stream/mqttdevicewrapper.h \
     infra/stream/devicewrapper.h \
-    infra/filterevent.h \
     shared/utils.h
 
 unix: {

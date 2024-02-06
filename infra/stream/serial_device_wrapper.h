@@ -1,94 +1,47 @@
-#ifndef MQTTDEVICEWRAPPER_H
-#define MQTTDEVICEWRAPPER_H
+#ifndef SERIAL_DEVICE_WRAPPER_H
+#define SERIAL_DEVICE_WRAPPER_H
 
 #include <QObject>
 #include <QTimer>
+#include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
 
-#include "qmqtt.h"
 #include "devicewrapper.h"
 
-const QString MQTT_MESSAGE_SEPARATOR = "@";
-
-class MqttClient : public QMQTT::Client
+class SerialDeviceWrapper : public DeviceWrapper
 {
     Q_OBJECT
 public:
-    explicit MqttClient(QObject *parent = nullptr,
-                       const QHostAddress& host = QHostAddress::LocalHost,
-                       const quint16 port = 1883, QString topic = "");
-
-    void AddTopic(const QString topic);
-    void RemoveTopic(const QString topic);
-
-protected slots:
-    void onConnected();
-    void onDisconnected();
-    void onSubscribed(const QString& topic, const quint8 qos);
-
-private:
-    QHostAddress m_host;
-    quint16 m_port;
-    QStringList m_topic_list;
-};
-
-class Publisher : public MqttClient
-{
-    Q_OBJECT
-public:
-    explicit Publisher(QObject *parent = nullptr,
-                       const QHostAddress& host = QHostAddress::LocalHost,
-                       const quint16 port = 1883, QString topic = "");
-
-    void PublishData(QMQTT::Message message);
-};
-
-class Subscriber : public MqttClient
-{
-    Q_OBJECT
-public:
-    explicit Subscriber(QObject *parent = nullptr,
-                       const QHostAddress& host = QHostAddress::LocalHost,
-                       const quint16 port = 1883, QString topic = "");
-
-signals:
-    void SignalOnReceived(QMQTT::Message message);
-};
-
-class MqttDeviceWrapper : public DeviceWrapper
-{
-    Q_OBJECT
-public:
-    MqttDeviceWrapper(MqttDeviceWrapper& other) = delete;
-    void operator=(const MqttDeviceWrapper&) = delete;
-    ~MqttDeviceWrapper() override;
-
-    static MqttDeviceWrapper* GetInstance(const QString config);
+    SerialDeviceWrapper(QObject *parent = nullptr);
+    ~SerialDeviceWrapper() override;
 
     void Write(const QString data) override;
     DeviceStatus GetStatus() override;
     void Reconnect() override;
     void ChangeConfig(const QString command) override;
-    bool InitConfig(const QString config = "127.0.0.1:1883") override;
-
-protected:
-    MqttDeviceWrapper(QObject *parent = nullptr);
+    bool InitConfig(const QString config = "") override;
 
 private slots:
-    void receiveData(QMQTT::Message message);
+    void receiveData(QByteArray message);
 
 private:
-    struct MqttConfig {
-        QHostAddress host;
-        quint16 port;
-    } m_mqttConfig;
-    quint16 m_idCounter;
-    QString m_defaultTopic;
+    struct SerialConfig {
+        QString portname;
+        QSerialPort::BaudRate baudrate;
+        QSerialPort::DataBits databits;
+        QSerialPort::StopBits stopbits;
+        QSerialPort::Parity parity;
+        QSerialPort::FlowControl flowcontrol;
+    } m_serialConfig;
 
-    Publisher* m_publisher;
-    Subscriber* m_subsciber;
-    static QMap<QString, MqttDeviceWrapper*> m_wrappers;
+    QSerialPort* m_serial;
 
+    QSerialPort::BaudRate str2Baud(QString baud);
+    QSerialPort::DataBits str2DataBit(QString databit);
+    QSerialPort::FlowControl str2flwCtrl(QString flwCtrl);
+    QSerialPort::Parity str2parity(QString parity);
+    QSerialPort::StopBits str2StopBit(QString stopBit);
 };
 
 
-#endif // MQTTDEVICEWRAPPER_H
+#endif // SERIAL_DEVICE_WRAPPER_H
