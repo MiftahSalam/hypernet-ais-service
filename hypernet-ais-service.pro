@@ -43,8 +43,7 @@ SOURCES += \
     shared/error/err_file.cpp \
     usecase/ais_parser/ais_input_service.cpp \
     main.cpp \
-    infra/stream/stream.cpp \
-    shared/utils.cpp
+    infra/stream/stream.cpp
 
 HEADERS += \
     di/di.h \
@@ -58,8 +57,7 @@ HEADERS += \
     shared/error/base_error.h \
     shared/error/err_file.h \
     usecase/ais_parser/ais_input_service.h \
-    infra/stream/stream.h \
-    shared/utils.h
+    infra/stream/stream.h
 
 unix: {
     LIBS += -L/usr/lib/AISLib -lAISLib
@@ -74,9 +72,3 @@ unix: {
 
 win32:CONFIG(release, debug|release): LIBS += -LC:\Users\ms_tensai\AISLib\lib\2024\v1 -lAISLib
 else:win32:CONFIG(debug, debug|release): LIBS += -LC:\Users\ms_tensai\AISLib\lib\2024\v1 -lAISLib
-
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
