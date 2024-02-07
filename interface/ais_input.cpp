@@ -9,6 +9,8 @@ AISInput::AISInput(Stream *input, AISInputService *service)
 
     connect(aisInput, &Stream::SignalReceiveData, this, &AISInput::onAisInputDataReceived);
     connect(decoder, &AISLib::AISDecoder::signalNewTrarget, this, &AISInput::onNewAisTarget);
+
+    aisInput->Reconnect();
 }
 
 void AISInput::onAisInputDataReceived(const QString &data)

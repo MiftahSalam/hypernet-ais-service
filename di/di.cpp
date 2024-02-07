@@ -1,6 +1,6 @@
 #include "di.h"
 
-const QString COMMON_CONFIG_PATH = QDir::homePath()+QDir::separator()+".ais_service.conf";
+const QString COMMON_CONFIG_PATH = QDir::homePath()+QDir::separator()+".hypernet/ais_service.conf";
 
 DI::DI()
 {
@@ -9,5 +9,11 @@ DI::DI()
 
 void DI::setup()
 {
-    aisInput = new Stream(nullptr, COMMON_CONFIG_PATH);
+    aisInput = new Stream(nullptr, config->getAisInputConfig());
+
+    aisRepo = AISTargetRepository::Create();
+
+    aisInputService = new AISInputService(nullptr, aisRepo);
+
+    inputAis = new AISInput(aisInput, aisInputService);
 }
