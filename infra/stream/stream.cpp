@@ -1,6 +1,6 @@
 #include "stream.h"
-
-#include <RadarEngine/radarconfig.h>
+#include "qdebug.h"
+#include "serial_device_wrapper.h"
 
 Stream::Stream(QObject *parent, QString config) :
     QObject(parent)
@@ -9,7 +9,10 @@ Stream::Stream(QObject *parent, QString config) :
 
     switch (m_config.type) {
     case MQTT:
-        m_streamDevice = MqttDeviceWrapper::GetInstance(m_config.config);
+        break;
+    case SERIAL:
+        m_streamDevice = new SerialDeviceWrapper(this);
+        m_streamDevice->InitConfig(m_config.config);
     }
 
     if(m_streamDevice) connect(m_streamDevice,&DeviceWrapper::ReadyRead,this,&Stream::SignalReceiveData);
@@ -23,7 +26,10 @@ void Stream::SetConfig(const QString& config)
     {
         switch (m_config.type) {
         case MQTT:
-            m_streamDevice = MqttDeviceWrapper::GetInstance(m_config.config);
+            break;
+        case SERIAL:
+            m_streamDevice = new SerialDeviceWrapper(this);
+            m_streamDevice->InitConfig(m_config.config);
         }
 
         if(m_streamDevice) connect(m_streamDevice,&DeviceWrapper::ReadyRead,this,&Stream::SignalReceiveData);
@@ -40,18 +46,20 @@ void Stream::SendData(const QString &data)
 {
     m_streamDevice->Write(data);
 }
+
 void Stream::generateConfig(const QString config)
 {
     qDebug()<<Q_FUNC_INFO<<"config"<<config;
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
-    QStringList config_list = config.split(";",QString::SkipEmptyParts);
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    QStringList config_list = config.split(";", Qt::SkipEmptyParts);
 #else
-    QStringList config_list = config.split(";",QString::SkipEmptyParts);
+    QStringList config_list = config.split(";", QString::SkipEmptyParts);
 #endif
     if(config_list.size() == 3)
     {
         if(config_list.at(0).contains("mqtt",Qt::CaseInsensitive)) m_config.type = MQTT;
+        else if(config_list.at(0).contains("serial",Qt::CaseInsensitive)) m_config.type = SERIAL;
         else
         {
             qDebug()<<Q_FUNC_INFO<<"unknown stream type config"<<config;

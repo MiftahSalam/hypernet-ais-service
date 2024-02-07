@@ -3,14 +3,15 @@
 
 #include <QObject>
 
-#include "serial_device_wrapper.h"
+#include "device_wrapper.h"
 
 class Stream : public QObject
 {
     Q_OBJECT
 public:    
     enum StreamType {
-        MQTT
+        MQTT,
+        SERIAL
     };
     enum StreamMode {
         STREAM_IN,

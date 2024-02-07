@@ -1,4 +1,4 @@
-#include "devicewrapper.h"
+#include "device_wrapper.h"
 
 DeviceWrapper::DeviceWrapper(QObject *parent) :
     QObject(parent)
