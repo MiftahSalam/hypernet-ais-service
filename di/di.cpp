@@ -7,6 +7,14 @@ DI::DI()
     config = Configuration::getInstance(COMMON_CONFIG_PATH);
 }
 
+DI::~DI()
+{
+    delete inputAis;
+    delete aisInputService;
+    delete aisRepo;
+    delete aisInput;
+}
+
 void DI::setup()
 {
     aisInput = new Stream(nullptr, config->getAisInputConfig());

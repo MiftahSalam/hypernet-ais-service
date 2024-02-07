@@ -9,6 +9,7 @@ class DI
 {
 public:
     DI();
+    ~DI();
 
     void setup();
 
