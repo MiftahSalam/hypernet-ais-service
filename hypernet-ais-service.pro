@@ -37,20 +37,12 @@ SOURCES += \
     infra/database/ais/memory/trackrepository_mem.cpp \
     infra/stream/device_wrapper.cpp \
     infra/stream/serial_device_wrapper.cpp \
+    interface/ais_input.cpp \
     shared/configuration.cpp \
     shared/error/base_error.cpp \
     shared/error/err_file.cpp \
-    usecase/alarm/alarm.cpp \
-    usecase/alarm/alarmmanager.cpp \
-    usecase/alarm/gzalarm.cpp \
-    usecase/ppi/arpa.cpp \
-    usecase/ppi/ppigrabber.cpp \
-    usecase/stream/echosender.cpp \
-    usecase/track/track.cpp \
-    usecase/track/trackmodelview.cpp \
+    usecase/ais_parser/ais_input_service.cpp \
     main.cpp \
-    usecase/stream/arpasender.cpp \
-    usecase/stream/navsensor.cpp \
     infra/stream/stream.cpp \
     shared/utils.cpp
 
@@ -61,19 +53,11 @@ HEADERS += \
     infra/database/ais/memory/trackrepository_mem.h \
     infra/stream/device_wrapper.h \
     infra/stream/serial_device_wrapper.h \
+    interface/ais_input.h \
     shared/configuration.h \
     shared/error/base_error.h \
     shared/error/err_file.h \
-    usecase/alarm/alarm.h \
-    usecase/alarm/alarmmanager.h \
-    usecase/alarm/gzalarm.h \
-    usecase/ppi/arpa.h \
-    usecase/ppi/ppigrabber.h \
-    usecase/stream/echosender.h \
-    usecase/track/track.h \
-    usecase/track/trackmodelview.h \
-    usecase/stream/arpasender.h \
-    usecase/stream/navsensor.h \
+    usecase/ais_parser/ais_input_service.h \
     infra/stream/stream.h \
     shared/utils.h
 
