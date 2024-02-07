@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core network serial
+QT       += core network serialport
 
 TEMPLATE = app
 
@@ -32,9 +32,14 @@ else {
 }
 
 SOURCES += \
+    di/di.cpp \
     domain/ais/ais_target_model.cpp \
     infra/database/ais/memory/trackrepository_mem.cpp \
+    infra/stream/device_wrapper.cpp \
     infra/stream/serial_device_wrapper.cpp \
+    shared/configuration.cpp \
+    shared/error/base_error.cpp \
+    shared/error/err_file.cpp \
     usecase/alarm/alarm.cpp \
     usecase/alarm/alarmmanager.cpp \
     usecase/alarm/gzalarm.cpp \
@@ -47,14 +52,18 @@ SOURCES += \
     usecase/stream/arpasender.cpp \
     usecase/stream/navsensor.cpp \
     infra/stream/stream.cpp \
-    infra/stream/devicewrapper.cpp \
     shared/utils.cpp
 
 HEADERS += \
+    di/di.h \
     domain/ais/ais_target_model.h \
     domain/ais/ais_target_repository.h \
     infra/database/ais/memory/trackrepository_mem.h \
+    infra/stream/device_wrapper.h \
     infra/stream/serial_device_wrapper.h \
+    shared/configuration.h \
+    shared/error/base_error.h \
+    shared/error/err_file.h \
     usecase/alarm/alarm.h \
     usecase/alarm/alarmmanager.h \
     usecase/alarm/gzalarm.h \
@@ -66,7 +75,6 @@ HEADERS += \
     usecase/stream/arpasender.h \
     usecase/stream/navsensor.h \
     infra/stream/stream.h \
-    infra/stream/devicewrapper.h \
     shared/utils.h
 
 unix: {
