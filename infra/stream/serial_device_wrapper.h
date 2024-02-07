@@ -6,7 +6,7 @@
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 
-#include "devicewrapper.h"
+#include "device_wrapper.h"
 
 class SerialDeviceWrapper : public DeviceWrapper
 {
