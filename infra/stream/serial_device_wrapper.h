@@ -23,6 +23,7 @@ public:
 
 private slots:
     void receiveData(QByteArray message);
+    void onNativeReadyRead();
 
 private:
     struct SerialConfig {

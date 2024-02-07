@@ -42,13 +42,13 @@ bool SerialDeviceWrapper::InitConfig(const QString config)
 
 void SerialDeviceWrapper::Reconnect()
 {
-    disconnect(m_serial, &QSerialPort::readyRead, this, &SerialDeviceWrapper::receiveData);
+    disconnect(m_serial, &QSerialPort::readyRead, this, &SerialDeviceWrapper::onNativeReadyRead);
     if (m_serial->isOpen()) m_serial->close();
 
     m_serial->setPortName(m_serialConfig.portname);
     if(m_serial->open(QIODevice::ReadOnly))
     {
-        connect(m_serial, &QSerialPort::readyRead, this, &SerialDeviceWrapper::receiveData);
+        connect(m_serial, &QSerialPort::readyRead, this, &SerialDeviceWrapper::onNativeReadyRead);
 
         m_serial->setBaudRate(m_serialConfig.baudrate);
         m_serial->setDataBits(m_serialConfig.databits);
@@ -79,6 +79,15 @@ DeviceWrapper::DeviceStatus SerialDeviceWrapper::GetStatus()
 void SerialDeviceWrapper::receiveData(QByteArray message)
 {
     QString payload = QString::fromUtf8(message);
+
+    qDebug()<<Q_FUNC_INFO<<"payload"<<payload;
+    m_last_data_time = QDateTime::currentSecsSinceEpoch();
+    emit ReadyRead(payload);
+}
+
+void SerialDeviceWrapper::onNativeReadyRead()
+{
+    QString payload = QString::fromUtf8(m_serial->readAll());
 
     qDebug()<<Q_FUNC_INFO<<"payload"<<payload;
     m_last_data_time = QDateTime::currentSecsSinceEpoch();
