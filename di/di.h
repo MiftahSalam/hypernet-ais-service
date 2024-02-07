@@ -12,6 +12,7 @@ public:
     void setup();
 
     Configuration *config;
+
     Stream *aisInput;
 };
 
