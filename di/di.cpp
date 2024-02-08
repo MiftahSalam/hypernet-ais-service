@@ -13,6 +13,7 @@ DI::~DI()
     delete aisInputService;
     delete aisRepo;
     delete aisInput;
+    delete config;
 }
 
 void DI::setup()
