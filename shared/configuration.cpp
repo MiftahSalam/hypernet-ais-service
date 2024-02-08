@@ -33,3 +33,7 @@ QString Configuration::getAisInputConfig() const
 {
     return aisInputConfig;
 }
+
+Configuration::~Configuration()
+{
+}

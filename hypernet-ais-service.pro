@@ -38,6 +38,7 @@ SOURCES += \
     infra/stream/device_wrapper.cpp \
     infra/stream/serial_device_wrapper.cpp \
     interface/ais_input.cpp \
+    interface/data_input_adjuster.cpp \
     shared/configuration.cpp \
     shared/error/base_error.cpp \
     shared/error/err_file.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
     infra/stream/device_wrapper.h \
     infra/stream/serial_device_wrapper.h \
     interface/ais_input.h \
+    interface/data_input_adjuster.h \
     shared/configuration.h \
     shared/error/base_error.h \
     shared/error/err_file.h \

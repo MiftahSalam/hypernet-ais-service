@@ -2,6 +2,7 @@
 #define AISINPUT_H
 
 #include "infra/stream/stream.h"
+#include "data_input_adjuster.h"
 #include "usecase/ais_parser/ais_input_service.h"
 
 #include <QObject>
@@ -13,6 +14,7 @@ class AISInput: public QObject
     Q_OBJECT
 public:
     AISInput(Stream *input, AISInputService *service);
+    ~AISInput();
 
 private slots:
     void onAisInputDataReceived(const QString &data);
@@ -23,6 +25,7 @@ private:
     AISInputService *aisService;
 
     AISLib::AISDecoder *decoder;
+    DataInputAdjuster *adjuster;
 };
 
 #endif // AISINPUT_H
