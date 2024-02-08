@@ -35,7 +35,7 @@ else {
 SOURCES += \
     di/di.cpp \
     domain/ais/ais_target_model.cpp \
-    infra/database/ais/memory/trackrepository_mem.cpp \
+    infra/database/ais/memory/ais_target_repository_mem.cpp \
     infra/stream/device_wrapper.cpp \
     infra/stream/serial_device_wrapper.cpp \
     interface/ais_input.cpp \
@@ -54,7 +54,7 @@ HEADERS += \
     di/di.h \
     domain/ais/ais_target_model.h \
     domain/ais/ais_target_repository.h \
-    infra/database/ais/memory/trackrepository_mem.h \
+    infra/database/ais/memory/ais_target_repository_mem.h \
     infra/stream/device_wrapper.h \
     infra/stream/serial_device_wrapper.h \
     interface/ais_input.h \
