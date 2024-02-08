@@ -3,6 +3,7 @@
 
 #include "infra/stream/stream.h"
 #include "interface/ais_input.h"
+#include "interface/ais_output/ais_output.h"
 #include "shared/configuration.h"
 #include "usecase/ais_sender/ais_output_service.h"
 
@@ -24,6 +25,7 @@ public:
     AISOutputService *aisOutputService;
 
     AISInput *inputAis;
+    AISOutput *outputAis;
 };
 
 #endif // DI_H

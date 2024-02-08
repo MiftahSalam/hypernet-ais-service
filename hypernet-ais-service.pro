@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core network serialport
+QT       += core network serialport websockets
+QT       -= gui
 
 TEMPLATE = app
 
@@ -38,6 +39,7 @@ SOURCES += \
     infra/stream/device_wrapper.cpp \
     infra/stream/serial_device_wrapper.cpp \
     interface/ais_input.cpp \
+    interface/ais_output/ais_output_websocket_server.cpp \
     interface/data_input_adjuster.cpp \
     shared/configuration.cpp \
     shared/error/base_error.cpp \
@@ -45,6 +47,7 @@ SOURCES += \
     usecase/ais_parser/ais_input_service.cpp \
     main.cpp \
     infra/stream/stream.cpp \
+    usecase/ais_sender/ais_output_serializer_json.cpp \
     usecase/ais_sender/ais_output_service.cpp
 
 HEADERS += \
@@ -55,12 +58,16 @@ HEADERS += \
     infra/stream/device_wrapper.h \
     infra/stream/serial_device_wrapper.h \
     interface/ais_input.h \
+    interface/ais_output/ais_output.h \
+    interface/ais_output/ais_output_websocket_server.h \
     interface/data_input_adjuster.h \
     shared/configuration.h \
     shared/error/base_error.h \
     shared/error/err_file.h \
     usecase/ais_parser/ais_input_service.h \
     infra/stream/stream.h \
+    usecase/ais_sender/ais_output_serializer.h \
+    usecase/ais_sender/ais_output_serializer_json.h \
     usecase/ais_sender/ais_output_service.h
 
 unix: {

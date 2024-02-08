@@ -1,4 +1,5 @@
 #include "di.h"
+#include "interface/ais_output/ais_output_websocket_server.h"
 
 const QString COMMON_CONFIG_PATH = QDir::homePath()+QDir::separator()+".hypernet/ais_service.conf";
 
@@ -10,6 +11,7 @@ DI::DI()
 DI::~DI()
 {
     delete inputAis;
+    delete outputAis;
     delete aisInputService;
     delete aisRepo;
     delete aisInput;
@@ -26,4 +28,7 @@ void DI::setup()
     aisOutputService = new AISOutputService(nullptr, aisRepo, config->getAisOutputConfig());
 
     inputAis = new AISInput(aisInput, aisInputService);
+    outputAis = new AISOutput_WebSocketServer(nullptr, aisOutputService, config->getAisOutputConfig());
+
+    outputAis->Open();
 }
