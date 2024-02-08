@@ -16,6 +16,9 @@ AISInput::AISInput(Stream *input, AISInputService *service)
 
 void AISInput::onNewAisTarget(AISLib::AISTargetData *data)
 {
+    //validation?
+
+    //create/insert new data
     aisService->createNewTarget(data);
 }
 

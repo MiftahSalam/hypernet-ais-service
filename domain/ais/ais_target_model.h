@@ -9,6 +9,7 @@ public:
     AISTargetModel();
     AISTargetModel(const AISTargetModel &target);
 
+    long long                 timestamp;
     int                       MMSI;
     int                       IMO;
     unsigned char             Class;

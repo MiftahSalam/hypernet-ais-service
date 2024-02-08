@@ -19,6 +19,8 @@ signals:
 
 private:
     AISTargetRepository *aisRepo;
+
+    AISTargetModel toModel(const AISLib::AISTargetData *data);
 };
 
 #endif // AISINPUTSERVICE_H
