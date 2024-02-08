@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include <AISLib/aisdecoder.h>
+#include <aisdecoder.h>
 
 class AISInput: public QObject
 {

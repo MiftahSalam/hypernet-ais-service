@@ -77,9 +77,9 @@ unix: {
     DEPENDPATH += /usr/include/AISLib
 
 } else:win32 {
-    INCLUDEPATH +=C:\Users\ms_tensai\AISLib\include\2024\v1
-    DEPENDPATH += C:\Users\ms_tensai\AISLib\lib\2024\v1
+    INCLUDEPATH +=C:\Users\miftah\hypernet\ais\dev\include
+    DEPENDPATH +=C:\Users\miftah\hypernet\ais\dev\include
 }
 
-win32:CONFIG(release, debug|release): LIBS += -LC:\Users\ms_tensai\AISLib\lib\2024\v1 -lAISLib
-else:win32:CONFIG(debug, debug|release): LIBS += -LC:\Users\ms_tensai\AISLib\lib\2024\v1 -lAISLib
+win32:CONFIG(release, debug|release): LIBS += -LC:\Users\miftah\hypernet\ais\dev\lib -lAISLib
+else:win32:CONFIG(debug, debug|release): LIBS += -LC:\Users\miftah\hypernet\ais\dev\lib -lAISLib
