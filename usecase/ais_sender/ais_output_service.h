@@ -29,8 +29,10 @@ private:
 
     AISTargetRepository *aisRepo;
 
+    std::list<AISTargetModel*> getTargets();
     void populateConfig(const QString cfg);
     void sendTarget();
+    void updateDataSendCounter();
 };
 
 #endif // AISOUTPUTSERVICE_H

@@ -16,22 +16,24 @@ AISOutputService::AISOutputService(QObject *parent, AISTargetRepository *repo, Q
 
 void AISOutputService::sendTarget()
 {
-    dataSendCounter += sendLimit;
-    if (dataSendCounter >= aisRepo->Count()) {
-        dataSendCounter = 0;
-    }
+    updateDataSendCounter();
 
-    AISTargetQueryFilter filter;
-    filter.limit = sendLimit;
-    filter.startIndex = dataSendCounter;
-
-    auto targets = aisRepo->Find(filter);
+    auto targets = getTargets();
     if (targets.size() > 0) {
         QList<AISTargetModel*> qlist(targets.begin(), targets.end());
         AISOutputSerializer* serializer = new AISOutputSerializer_JSON(qlist);
 
         emit signalSendAISTargetRaw(serializer->decode().toUtf8());
     } else qDebug()<<Q_FUNC_INFO<<"ais target query result  is empty";
+}
+
+std::list<AISTargetModel *> AISOutputService::getTargets()
+{
+    AISTargetQueryFilter filter;
+    filter.limit = sendLimit;
+    filter.startIndex = dataSendCounter;
+
+    return aisRepo->Find(filter);
 }
 
 void AISOutputService::onTimeout()
@@ -68,4 +70,12 @@ void AISOutputService::populateConfig(const QString cfg)
         }
     }
     else qDebug()<<Q_FUNC_INFO<<"invalid config"<<cfg;
+}
+
+void AISOutputService::updateDataSendCounter()
+{
+    dataSendCounter += sendLimit;
+    if (dataSendCounter >= aisRepo->Count()) {
+        dataSendCounter = 0;
+    }
 }
