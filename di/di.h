@@ -4,6 +4,7 @@
 #include "infra/stream/stream.h"
 #include "interface/ais_input.h"
 #include "shared/configuration.h"
+#include "usecase/ais_sender/ais_output_service.h"
 
 class DI
 {
@@ -20,6 +21,7 @@ public:
     AISTargetRepository *aisRepo;
 
     AISInputService *aisInputService;
+    AISOutputService *aisOutputService;
 
     AISInput *inputAis;
 };

@@ -23,6 +23,7 @@ void DI::setup()
     aisRepo = AISTargetRepository::Create();
 
     aisInputService = new AISInputService(nullptr, aisRepo);
+    aisOutputService = new AISOutputService(nullptr, aisRepo, config->getAisOutputConfig());
 
     inputAis = new AISInput(aisInput, aisInputService);
 }

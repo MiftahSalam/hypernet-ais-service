@@ -44,7 +44,8 @@ SOURCES += \
     shared/error/err_file.cpp \
     usecase/ais_parser/ais_input_service.cpp \
     main.cpp \
-    infra/stream/stream.cpp
+    infra/stream/stream.cpp \
+    usecase/ais_sender/ais_output_service.cpp
 
 HEADERS += \
     di/di.h \
@@ -59,7 +60,8 @@ HEADERS += \
     shared/error/base_error.h \
     shared/error/err_file.h \
     usecase/ais_parser/ais_input_service.h \
-    infra/stream/stream.h
+    infra/stream/stream.h \
+    usecase/ais_sender/ais_output_service.h
 
 unix: {
     LIBS += -L/usr/lib/AISLib -lAISLib

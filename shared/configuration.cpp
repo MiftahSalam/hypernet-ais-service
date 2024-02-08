@@ -11,6 +11,17 @@ Configuration::Configuration(QString path)
     QSettings config(path, QSettings::IniFormat);
 
     aisInputConfig = config.value(NON_VOLATILE_AIS_INPUT_CONFIG, "").toString();
+    aisOutputConfig = config.value(NON_VOLATILE_AIS_OUTPUT_CONFIG, "").toString();
+}
+
+QString Configuration::getAisOutputConfig() const
+{
+    return aisOutputConfig;
+}
+
+QString Configuration::getAisInputConfig() const
+{
+    return aisInputConfig;
 }
 
 Configuration *Configuration::getInstance(const QString path)
@@ -27,11 +38,6 @@ Configuration *Configuration::getInstance(const QString path)
     }
 
     return config;
-}
-
-QString Configuration::getAisInputConfig() const
-{
-    return aisInputConfig;
 }
 
 Configuration::~Configuration()
