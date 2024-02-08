@@ -28,7 +28,12 @@ QString AISOutputSerializer_JSON::decode()
 
             doc = QJsonDocument(array);
         } else {
-            doc = QJsonDocument(toJsonObj(m_data[0]));
+            if (isArray) {
+                QJsonArray array;
+
+                array.append(toJsonObj(m_data[0]));
+                doc = QJsonDocument(array);
+            } else doc = QJsonDocument(toJsonObj(m_data[0]));
         }
 
         return QString(doc.toJson(QJsonDocument::Compact));
