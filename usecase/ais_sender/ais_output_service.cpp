@@ -1,9 +1,11 @@
 #include "ais_output_service.h"
+#include "usecase/ais_sender/ais_output_serializer_json.h"
 
 #include <QDebug>
+#include <QList>
 
 AISOutputService::AISOutputService(QObject *parent, AISTargetRepository *repo, QString cfg)
-    : QObject{parent}, aisRepo(repo)
+    : QObject{parent}, dataSendCounter(0), aisRepo(repo)
 {
     populateConfig(cfg);
 
@@ -12,9 +14,31 @@ AISOutputService::AISOutputService(QObject *parent, AISTargetRepository *repo, Q
     timer.start(timeout);
 }
 
+void AISOutputService::sendTarget()
+{
+    dataSendCounter += sendLimit;
+    if (dataSendCounter >= aisRepo->Count()) {
+        dataSendCounter = 0;
+    }
+
+    AISTargetQueryFilter filter;
+    filter.limit = sendLimit;
+    filter.startIndex = dataSendCounter;
+
+    auto targets = aisRepo->Find(filter);
+    if (targets.size() > 0) {
+        QList<AISTargetModel*> qlist(targets.begin(), targets.end());
+        AISOutputSerializer* serializer = new AISOutputSerializer_JSON(qlist);
+
+        emit signalSendAISTargetRaw(serializer->decode().toUtf8());
+    } else qDebug()<<Q_FUNC_INFO<<"ais target query result  is empty";
+}
+
 void AISOutputService::onTimeout()
 {
     qDebug()<<Q_FUNC_INFO<<"ais target size"<<aisRepo->FindAll().size();
+
+    sendTarget();
 }
 
 void AISOutputService::populateConfig(const QString cfg)
@@ -26,7 +50,7 @@ void AISOutputService::populateConfig(const QString cfg)
 #else
     QStringList config_list = config.split(";", QString::SkipEmptyParts);
 #endif
-    if(config_list.size() == 2)
+    if(config_list.size() == 3)
     {
         bool ok;
         timeout = config_list.at(1).toInt(&ok);
@@ -34,6 +58,13 @@ void AISOutputService::populateConfig(const QString cfg)
         {
             timeout = 1000;
             qWarning()<<Q_FUNC_INFO<<"invalid timeout config"<<cfg<<". will use default";
+        }
+
+        sendLimit = config_list.at(2).toInt(&ok);
+        if(!ok)
+        {
+            sendLimit = 5;
+            qWarning()<<Q_FUNC_INFO<<"invalid send limit config"<<cfg<<". will use default";
         }
     }
     else qDebug()<<Q_FUNC_INFO<<"invalid config"<<cfg;

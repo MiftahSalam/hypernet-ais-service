@@ -16,6 +16,7 @@ public:
             QString cfg = "");
 
 signals:
+    void signalSendAISTargetRaw(const QByteArray data);
 
 private slots:
     void onTimeout();
@@ -23,10 +24,13 @@ private slots:
 private:
     QTimer timer;
     int timeout;
+    size_t sendLimit;
+    size_t dataSendCounter;
 
     AISTargetRepository *aisRepo;
 
     void populateConfig(const QString cfg);
+    void sendTarget();
 };
 
 #endif // AISOUTPUTSERVICE_H
