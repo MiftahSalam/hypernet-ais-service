@@ -1,7 +1,14 @@
 #include "infra/database/ais/memory/trackrepository_mem.h"
 
+#include <QList>
+
 AISTargetRepository_Mem::AISTargetRepository_Mem()
 {
+}
+
+size_t AISTargetRepository_Mem::Count()
+{
+    return model.size();
 }
 
 void AISTargetRepository_Mem::Insert(const AISTargetModel &targetModel)
@@ -23,7 +30,21 @@ void AISTargetRepository_Mem::Update(const AISTargetModel &targetModel)
 std::list<AISTargetModel*> AISTargetRepository_Mem::FindAll()
 {
     QList<AISTargetModel*> listTarget = model.values();
-    return listTarget.toStdList();
+    return std::list<AISTargetModel*>(listTarget.begin(), listTarget.end());
+}
+
+std::list<AISTargetModel *> AISTargetRepository_Mem::Find(const AISTargetQueryFilter filter)
+{
+    QList<AISTargetModel*> listTarget = model.values();
+    QList<AISTargetModel*> listTargetFiltered;
+
+    int counter = filter.startIndex;
+    while (counter < filter.limit && counter < listTarget.size()) {
+        listTargetFiltered.append(listTarget.at(counter));
+        counter++;
+    }
+
+    return std::list<AISTargetModel*>(listTargetFiltered.begin(), listTargetFiltered.end());
 }
 
 AISTargetModel* AISTargetRepository_Mem::FindOne(const int &mmsi)
