@@ -17,10 +17,10 @@ SerialDeviceWrapper::~SerialDeviceWrapper()
 bool SerialDeviceWrapper::InitConfig(const QString config)
 {
     bool ret_val = false;
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
     QStringList config_list = config.split(":", Qt::SkipEmptyParts);
 #else
-    QStringList config_list = config.split(":",QString::SkipEmptyParts);
+    QStringList config_list = config.split(":", QString::SkipEmptyParts);
 #endif
 
     if(config_list.size() == 6)

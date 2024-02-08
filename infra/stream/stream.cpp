@@ -51,7 +51,7 @@ void Stream::generateConfig(const QString config)
 {
     qDebug()<<Q_FUNC_INFO<<"config"<<config;
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
     QStringList config_list = config.split(";", Qt::SkipEmptyParts);
 #else
     QStringList config_list = config.split(";", QString::SkipEmptyParts);

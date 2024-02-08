@@ -66,15 +66,15 @@ void AISOutput_WebSocketServer::InitConfig()
 {
     qDebug()<<Q_FUNC_INFO<<"config"<<m_config;
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-    QStringList config_list = m_config.split(";", Qt::SkipEmptyParts);
+#if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
+    QStringList config_list = m_config.split(":", Qt::SkipEmptyParts);
 #else
-    QStringList config_list = m_config.split(";", QString::SkipEmptyParts);
+    QStringList config_list = m_config.split(":", QString::SkipEmptyParts);
 #endif
     if(config_list.size() == 3)
     {
         url = config_list.at(0);
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
         QStringList url_split = url.split(":", Qt::SkipEmptyParts);
 #else
         QStringList url_split = url.split(":", QString::SkipEmptyParts);
