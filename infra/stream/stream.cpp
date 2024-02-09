@@ -9,6 +9,7 @@ Stream::Stream(QObject *parent, QString config) :
 
     switch (m_config.type) {
     case MQTT:
+        qFatal("mqtt stream not implemented yet");
         break;
     case SERIAL:
         m_streamDevice = new SerialDeviceWrapper(this);
@@ -26,6 +27,7 @@ void Stream::SetConfig(const QString& config)
     {
         switch (m_config.type) {
         case MQTT:
+            qFatal("mqtt stream not implemented yet");
             break;
         case SERIAL:
             m_streamDevice = new SerialDeviceWrapper(this);
@@ -62,8 +64,7 @@ void Stream::generateConfig(const QString config)
         else if(config_list.at(0).contains("serial",Qt::CaseInsensitive)) m_config.type = SERIAL;
         else
         {
-            qDebug()<<Q_FUNC_INFO<<"unknown stream type config"<<config;
-            exit(1);
+            qFatal("unknown stream type config %s", config.toUtf8().constData());
         }
 
         if(config_list.at(1).contains("InOut",Qt::CaseInsensitive)) m_config.mode = STREAM_IN_OUT;
@@ -71,12 +72,14 @@ void Stream::generateConfig(const QString config)
         else if(config_list.at(1).contains("Out",Qt::CaseInsensitive)) m_config.mode = STREAM_OUT;
         else
         {
-            qDebug()<<Q_FUNC_INFO<<"unknown stream mode config"<<config;
-            exit(1);
+            qFatal("unknown stream mode config %s", config.toUtf8().constData());
         }
         m_config.config = config_list.at(2);
     }
-    else qDebug()<<Q_FUNC_INFO<<"invalid config"<<config;
+    else
+    {
+        qFatal("invalid config %s", config.toUtf8().constData());
+    }
 
 }
 
@@ -92,5 +95,5 @@ DeviceWrapper::DeviceStatus Stream::GetStreamStatus() const
 
 QString Stream::GetStreamStatusString() const
 {
-    return streamError;
+    return m_streamDevice->GetStatusString();
 }

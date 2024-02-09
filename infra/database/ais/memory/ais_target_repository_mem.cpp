@@ -1,6 +1,7 @@
 #include "infra/database/ais/memory/ais_target_repository_mem.h"
 
 #include <QList>
+#include <QDebug>
 
 AISTargetRepository_Mem::AISTargetRepository_Mem()
 {
@@ -24,7 +25,7 @@ void AISTargetRepository_Mem::Update(const AISTargetModel &targetModel)
     AISTargetModel *track = model.value(targetModel.MMSI);
     if (track) {
         model.insert(targetModel.MMSI,new AISTargetModel(targetModel));
-    }
+    } else qWarning()<<Q_FUNC_INFO<<"ais data not found";
 }
 
 std::list<AISTargetModel*> AISTargetRepository_Mem::FindAll()

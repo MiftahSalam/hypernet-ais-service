@@ -34,7 +34,7 @@ bool SerialDeviceWrapper::InitConfig(const QString config)
         m_serialConfig.parity = str2parity(config_list.at(4));
         m_serialConfig.flowcontrol = str2flwCtrl(config_list.at(5));
     }
-    else qDebug()<<Q_FUNC_INFO<<"invalid config"<<config;
+    else qFatal("invalid config %s", config.toUtf8().constData());
 
     return ret_val;
 }
