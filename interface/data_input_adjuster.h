@@ -8,11 +8,14 @@ class DataInputAdjuster
 public:
     DataInputAdjuster(char firstChar, char endChar);
 
-    QByteArray appendAndAdjustData(QByteArray data);
+   QList<QByteArray> appendAndAdjustData(QByteArray data);
+//    QByteArray appendAndAdjustData(QByteArray data);
 
 private:
     char m_firstChar;
     char m_endChar;
+    bool start_append;
+    bool stop_append;
     QByteArray buffer;
 };
 
