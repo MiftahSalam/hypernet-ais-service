@@ -9,6 +9,8 @@ DeviceWrapper::DeviceWrapper(QObject *parent) :
 
 QString DeviceWrapper::GetStatusString()
 {
+    GetStatus();
+
     QString status = "Unknown";
     switch (m_currentStatus) {
     case DeviceWrapper::NOT_AVAIL:
