@@ -32,9 +32,6 @@ void AISInput::onTimerTimeout()
 {
     //check stream status
     qDebug()<<Q_FUNC_INFO<<aisInput->GetStreamStatusString();
-
-    //update ais input service
-    aisService->update();
 }
 
 void AISInput::onAisInputDataReceived(const QString &data)

@@ -14,7 +14,6 @@ public:
     explicit AISInputService(QObject *parent = nullptr, AISTargetRepository *repo = nullptr);
 
     void createOrUpdateTarget(AISLib::AISTargetData *data);
-    void update();
 
 signals:
 
@@ -24,6 +23,7 @@ private:
     AISTargetRepository *aisRepo;
 
     AISTargetModel toModel(const AISLib::AISTargetData *data);
+    void updateModel(AISTargetModel *model, const AISLib::AISTargetData *data);
 };
 
 #endif // AISINPUTSERVICE_H
