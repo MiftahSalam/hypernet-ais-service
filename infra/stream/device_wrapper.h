@@ -18,6 +18,7 @@ public:
     explicit DeviceWrapper(QObject *parent = nullptr);
     virtual void Write(const QString data) = 0;
     virtual DeviceStatus GetStatus() = 0;
+    QString GetStatusString();
     virtual void Reconnect() = 0;
     virtual void ChangeConfig(const QString command) = 0;
     virtual bool InitConfig(const QString config) = 0;
