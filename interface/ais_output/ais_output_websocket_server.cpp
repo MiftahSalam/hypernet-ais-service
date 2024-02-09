@@ -74,7 +74,7 @@ void AISOutput_WebSocketServer::InitConfig()
 #else
     QStringList config_list = m_config.split(":", QString::SkipEmptyParts);
 #endif
-    if(config_list.size() == 3)
+    if(config_list.size() == 4)
     {
         url = config_list.at(0);
 #if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
