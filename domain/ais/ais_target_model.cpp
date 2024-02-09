@@ -5,12 +5,15 @@ AISTargetModel::AISTargetModel()
     IMO = 0;
     MMSI = 0;
     Class = 0;
+    ClassStr = "";
     VendorID = "";
     ShipType = 19; //unknown
+    ShipTypeString = "Unknown";
     ShipName = "";
     ShipNameExtension = "";
     CallSign = "";
     NavStatus = 15; //unknown
+    NavStatusString = "Unknown";
     Lat = 0.;
     Lon = 0.;
     SOG = 555.;
@@ -38,12 +41,15 @@ AISTargetModel::AISTargetModel(const AISTargetModel &target)
     IMO = target.IMO;
     MMSI = target.MMSI;
     Class = target.Class;
+    ClassStr = target.ClassStr;
     VendorID = target.VendorID;
     ShipType = target.ShipType;
+    ShipTypeString = target.ShipTypeString;
     ShipName = target.ShipName;
     ShipNameExtension = target.ShipNameExtension;
     CallSign = target.CallSign;
     NavStatus = target.NavStatus;
+    NavStatusString = target.NavStatusString;
     Lat = target.Lat;
     Lon = target.Lon;
     SOG = target.SOG;
@@ -66,5 +72,4 @@ AISTargetModel::AISTargetModel(const AISTargetModel &target)
     ETA_Hr = target.ETA_Hr;
     ETA_Min = target.ETA_Min;
     Destination = target.Destination;
-
 }

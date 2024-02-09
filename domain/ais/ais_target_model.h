@@ -13,12 +13,15 @@ public:
     int                       MMSI;
     int                       IMO;
     unsigned char             Class;
+    std::string               ClassStr;
     std::string               VendorID;
     unsigned char             ShipType;
+    std::string               ShipTypeString;
     std::string               ShipName;
     std::string               ShipNameExtension;
     std::string               CallSign;
     int                       NavStatus;
+    std::string               NavStatusString;
     double                    Lat;
     double                    Lon;
     double                    SOG;

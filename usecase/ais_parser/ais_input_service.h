@@ -22,7 +22,7 @@ private slots:
 private:
     AISTargetRepository *aisRepo;
 
-    AISTargetModel toModel(const AISLib::AISTargetData *data);
+    AISTargetModel toModel(AISLib::AISTargetData *data);
     void updateModel(AISTargetModel *model, const AISLib::AISTargetData *data);
 };
 

@@ -163,19 +163,22 @@ void AISInputService::updateModel(AISTargetModel *model, const AISLib::AISTarget
     aisRepo->Update(*model);
 }
 
-AISTargetModel AISInputService::toModel(const AISLib::AISTargetData *data)
+AISTargetModel AISInputService::toModel(AISLib::AISTargetData *data)
 {
     AISTargetModel model;
 
     model.MMSI = data->MMSI;
     model.IMO = data->IMO;
     model.Class = data->Class;
+    model.ClassStr = data->getClassString(true).toStdString();
     model.VendorID = data->VendorID;
     model.ShipType = data->ShipType;
+    model.ShipTypeString = data->getShipTypeString().toStdString();
     model.ShipName = data->ShipName;
     model.ShipNameExtension = data->ShipNameExtension;
     model.CallSign = data->CallSign;
     model.NavStatus = data->NavStatus;
+    model.NavStatusString = data->getNavStatusString().toStdString();
     model.Lat = data->Lat;
     model.Lon = data->Lon;
     model.SOG = data->SOG;
