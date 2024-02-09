@@ -24,6 +24,7 @@ private slots:
 private:
     QTimer timer;
     int timeout;
+    int expiredTimeout;
     size_t sendLimit;
     size_t dataSendCounter;
 
@@ -31,8 +32,9 @@ private:
 
     std::list<AISTargetModel*> getTargets();
     void populateConfig(const QString cfg);
-    void sendTarget();
+    QList<AISTargetModel *> sendTarget();
     void updateDataSendCounter();
+    void checkAndDeleteStaleTarget(QList<AISTargetModel *> targets);
 };
 
 #endif // AISOUTPUTSERVICE_H

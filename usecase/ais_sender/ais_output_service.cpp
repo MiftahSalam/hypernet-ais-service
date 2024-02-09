@@ -16,7 +16,7 @@ AISOutputService::AISOutputService(QObject *parent, AISTargetRepository *repo, Q
     timer.start(timeout);
 }
 
-void AISOutputService::sendTarget()
+QList<AISTargetModel*> AISOutputService::sendTarget()
 {
     updateDataSendCounter();
 
@@ -30,7 +30,11 @@ void AISOutputService::sendTarget()
         AISOutputSerializer* serializer = new AISOutputSerializer_JSON(qlist);
 
         emit signalSendAISTargetRaw(serializer->decode().toUtf8());
+
+        return qlist;
     } else qDebug()<<Q_FUNC_INFO<<"ais target query result  is empty";
+
+    return QList<AISTargetModel*>();
 }
 
 std::list<AISTargetModel *> AISOutputService::getTargets()
@@ -46,7 +50,28 @@ void AISOutputService::onTimeout()
 {
     qDebug()<<Q_FUNC_INFO<<"ais target size"<<aisRepo->FindAll().size();
 
-    sendTarget();
+    auto sendedTarget = sendTarget();
+    checkAndDeleteStaleTarget(sendedTarget);
+}
+
+void AISOutputService::checkAndDeleteStaleTarget(QList<AISTargetModel *> targets)
+{
+    auto now = QDateTime::currentMSecsSinceEpoch();
+    for (auto target : targets) {
+        qDebug()<<Q_FUNC_INFO<<"ais target"<<target->MMSI;
+        qDebug()<<Q_FUNC_INFO<<"now"<<now;
+        qDebug()<<Q_FUNC_INFO<<"timestamp"<<target->timestamp;
+        qDebug()<<Q_FUNC_INFO<<"timeout"<<now - target->timestamp;
+
+        if(now - target->timestamp > expiredTimeout) {
+            if(aisRepo->FindOne(target->MMSI))
+            {
+                aisRepo->Remove(target->MMSI);
+                qInfo()<<Q_FUNC_INFO<<"delete stale target"<<target->MMSI;
+            }
+            else qWarning()<<Q_FUNC_INFO<<"failed to delete stale target"<<target->MMSI<<". cannot find target";
+        }
+    }
 }
 
 void AISOutputService::populateConfig(const QString cfg)
@@ -58,7 +83,7 @@ void AISOutputService::populateConfig(const QString cfg)
 #else
     QStringList config_list = config.split(";", QString::SkipEmptyParts);
 #endif
-    if(config_list.size() == 3)
+    if(config_list.size() == 4)
     {
         bool ok;
         timeout = config_list.at(1).toInt(&ok);
@@ -73,6 +98,13 @@ void AISOutputService::populateConfig(const QString cfg)
         {
             sendLimit = 5;
             qWarning()<<Q_FUNC_INFO<<"invalid send limit config"<<cfg<<". will use default";
+        }
+
+        expiredTimeout = config_list.at(3).toInt(&ok);
+        if(!ok)
+        {
+            expiredTimeout = 10000;
+            qWarning()<<Q_FUNC_INFO<<"invalid expired timeout config"<<cfg<<". will use default";
         }
     }
     else qFatal("invalid config %s", cfg.toUtf8().constData());

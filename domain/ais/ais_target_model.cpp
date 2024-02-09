@@ -34,6 +34,7 @@ AISTargetModel::AISTargetModel()
 
 AISTargetModel::AISTargetModel(const AISTargetModel &target)
 {
+    timestamp = target.timestamp;
     IMO = target.IMO;
     MMSI = target.MMSI;
     Class = target.Class;
