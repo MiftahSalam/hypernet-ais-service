@@ -7,12 +7,12 @@ DataInputAdjuster::DataInputAdjuster(char firstChar, char endChar)
 
 QByteArray DataInputAdjuster::appendAndAdjustData(QByteArray data)
 {
-    qDebug()<<Q_FUNC_INFO<<buffer;
-
     buffer.append(data);
     if (buffer.length() > 200) {
         buffer.clear();
     }
+
+    qDebug()<<Q_FUNC_INFO<<buffer;
 
     int idxFirstChar = buffer.indexOf(m_firstChar);
     if (idxFirstChar > 0) {
@@ -24,12 +24,13 @@ QByteArray DataInputAdjuster::appendAndAdjustData(QByteArray data)
 
     for(int i=0; i<buffer.size(); i++)
     {
-        if (buffer.at(i) == m_endChar)
+        unsigned char bufChar = buffer.at(i);
+        if (bufChar == m_endChar)
         {
-            QByteArray buf = buffer;
+            QByteArray buf = buffer.mid(0, i);
             buffer.remove(0, i);
-
             qDebug()<<Q_FUNC_INFO<<"adjusted"<<buf;
+            qDebug()<<Q_FUNC_INFO<<"buffer"<<buffer;
 
             return buf;
         }
