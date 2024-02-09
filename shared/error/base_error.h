@@ -10,6 +10,8 @@ const QPair<int, QString> ERROR_CODE_UNKNOWN(-1, "Unknown error");
 const QPair<int, QString> ERROR_CODE_FILE_NOT_FOUND(11, "File not found");
 const QPair<int, QString> ERROR_CODE_FILE_CANNOT_BE_OPENED(12, "File cannot not be opened");
 
+const QPair<int, QString> ERROR_CODE_CONFIG(21, "Invalid config");
+
 class BaseError: public QException
 {
 public:

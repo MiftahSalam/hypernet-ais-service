@@ -43,6 +43,7 @@ SOURCES += \
     interface/data_input_adjuster.cpp \
     shared/configuration.cpp \
     shared/error/base_error.cpp \
+    shared/error/err_config.cpp \
     shared/error/err_file.cpp \
     usecase/ais_parser/ais_input_service.cpp \
     main.cpp \
@@ -63,6 +64,7 @@ HEADERS += \
     interface/data_input_adjuster.h \
     shared/configuration.h \
     shared/error/base_error.h \
+    shared/error/err_config.h \
     shared/error/err_file.h \
     usecase/ais_parser/ais_input_service.h \
     infra/stream/stream.h \
