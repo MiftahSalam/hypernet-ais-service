@@ -40,7 +40,8 @@ std::list<AISTargetModel *> AISTargetRepository_Mem::Find(const AISTargetQueryFi
     QList<AISTargetModel*> listTargetFiltered;
 
     int counter = filter.startIndex;
-    while (counter < filter.limit && counter < listTarget.size()) {
+    int limit = counter + filter.limit;
+    while (counter < limit && counter < listTarget.size()) {
         listTargetFiltered.append(listTarget.at(counter));
         counter++;
     }
