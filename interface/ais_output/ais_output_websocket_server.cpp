@@ -5,6 +5,8 @@
 AISOutput_WebSocketServer::AISOutput_WebSocketServer(QObject *parent, AISOutputService* service, QString cfg)
     : AISOutput(parent, service, cfg)
 {
+    if(!service) qFatal("ais output service is null");
+
     server = nullptr;
 }
 
@@ -16,18 +18,19 @@ void AISOutput_WebSocketServer::onNewConnection()
 
     m_clients << pSocket;
 
-    qInfo()<<Q_FUNC_INFO<<"new connection"<<pSocket->peerName()<<pSocket->peerAddress();
+    qInfo()<<Q_FUNC_INFO<<"new connection: peer name ->"<<pSocket->peerName()<<", peer address ->"<<pSocket->peerAddress();
 }
 
 void AISOutput_WebSocketServer::onSocketDisconnected()
 {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+
+    qInfo()<<Q_FUNC_INFO<<"client disconnected: peer name ->"<<pClient->peerName()<<", peer address ->"<<pClient->peerAddress();
+
     if (pClient) {
         m_clients.removeAll(pClient);
         pClient->deleteLater();
     }
-
-    qInfo()<<Q_FUNC_INFO<<"socket disconnected"<<pClient;
 }
 
 void AISOutput_WebSocketServer::Open()
@@ -47,8 +50,8 @@ void AISOutput_WebSocketServer::Open()
     } else {
         qWarning()<<Q_FUNC_INFO<<"ais output webserver cannot listen on url"<<url<<" with error"<<server->errorString();
     }
-    connect(server, &QWebSocketServer::newConnection, this, &AISOutput_WebSocketServer::onNewConnection);
 
+    connect(server, &QWebSocketServer::newConnection, this, &AISOutput_WebSocketServer::onNewConnection);
 }
 
 void AISOutput_WebSocketServer::SendRaw(const QByteArray data)
@@ -67,7 +70,7 @@ void AISOutput_WebSocketServer::InitConfig()
     qDebug()<<Q_FUNC_INFO<<"config"<<m_config;
 
 #if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
-    QStringList config_list = m_config.split(":", Qt::SkipEmptyParts);
+    QStringList config_list = m_config.split(";", Qt::SkipEmptyParts);
 #else
     QStringList config_list = m_config.split(":", QString::SkipEmptyParts);
 #endif
@@ -92,7 +95,7 @@ void AISOutput_WebSocketServer::InitConfig()
                 qWarning()<<Q_FUNC_INFO<<"invalid port"<<portStr<<". will use default 8083";
             }
         }
-        else qDebug()<<Q_FUNC_INFO<<"invalid url config"<<url;
+        else qFatal("invalid url config %s", url.toUtf8().constData());
     }
-    else qDebug()<<Q_FUNC_INFO<<"invalid config"<<m_config;
+    else qFatal("invalid config %s", m_config.toUtf8().constData());
 }

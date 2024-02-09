@@ -3,10 +3,10 @@
 AISInputService::AISInputService(QObject *parent, AISTargetRepository *repo)
     : QObject{parent}, aisRepo(repo)
 {
-
+    if(!repo) qFatal("ais repo is null");
 }
 
-void AISInputService::createNewTarget(AISLib::AISTargetData *data)
+void AISInputService::createOrUpdateTarget(AISLib::AISTargetData *data)
 {
     qDebug()<<Q_FUNC_INFO<<"ais mmsi"<<data->MMSI;
 
@@ -14,7 +14,14 @@ void AISInputService::createNewTarget(AISLib::AISTargetData *data)
     auto model = toModel(data);
     model.timestamp = QDateTime::currentMSecsSinceEpoch();
 
-    aisRepo->Insert(model);
+    if(aisRepo->FindOne(model.MMSI)) aisRepo->Update(model);
+    else aisRepo->Insert(model);
+}
+
+void AISInputService::update()
+{
+    //check ais expired/stale target
+    qDebug()<<Q_FUNC_INFO;
 }
 
 AISTargetModel AISInputService::toModel(const AISLib::AISTargetData *data)

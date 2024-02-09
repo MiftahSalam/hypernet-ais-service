@@ -13,9 +13,12 @@ class AISInputService : public QObject
 public:
     explicit AISInputService(QObject *parent = nullptr, AISTargetRepository *repo = nullptr);
 
-    void createNewTarget(AISLib::AISTargetData *data);
+    void createOrUpdateTarget(AISLib::AISTargetData *data);
+    void update();
 
 signals:
+
+private slots:
 
 private:
     AISTargetRepository *aisRepo;

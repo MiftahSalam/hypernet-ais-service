@@ -7,6 +7,8 @@
 AISOutputService::AISOutputService(QObject *parent, AISTargetRepository *repo, QString cfg)
     : QObject{parent}, dataSendCounter(0), aisRepo(repo)
 {
+    if(!repo) qFatal("ais repo is null");
+
     populateConfig(cfg);
 
     connect(&timer, &QTimer::timeout, this, &AISOutputService::onTimeout);
@@ -20,7 +22,11 @@ void AISOutputService::sendTarget()
 
     auto targets = getTargets();
     if (targets.size() > 0) {
+#if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
         QList<AISTargetModel*> qlist(targets.begin(), targets.end());
+#else
+        QList<AISTargetModel*> qlist = QList<AISTargetModel*>::fromStdList(targets);
+#endif
         AISOutputSerializer* serializer = new AISOutputSerializer_JSON(qlist);
 
         emit signalSendAISTargetRaw(serializer->decode().toUtf8());
@@ -47,7 +53,7 @@ void AISOutputService::populateConfig(const QString cfg)
 {
     qDebug()<<Q_FUNC_INFO<<"config"<<cfg;
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
     QStringList config_list = cfg.split(";", Qt::SkipEmptyParts);
 #else
     QStringList config_list = config.split(";", QString::SkipEmptyParts);
@@ -69,7 +75,7 @@ void AISOutputService::populateConfig(const QString cfg)
             qWarning()<<Q_FUNC_INFO<<"invalid send limit config"<<cfg<<". will use default";
         }
     }
-    else qDebug()<<Q_FUNC_INFO<<"invalid config"<<cfg;
+    else qFatal("invalid config %s", cfg.toUtf8().constData());
 }
 
 void AISOutputService::updateDataSendCounter()

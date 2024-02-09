@@ -6,6 +6,7 @@
 #include "usecase/ais_parser/ais_input_service.h"
 
 #include <QObject>
+#include <QTimer>
 
 #include <aisdecoder.h>
 
@@ -19,8 +20,10 @@ public:
 private slots:
     void onAisInputDataReceived(const QString &data);
     void onNewAisTarget(AISLib::AISTargetData *data);
+    void onTimerTimeout();
 
 private:
+    QTimer timer;
     Stream *aisInput;
     AISInputService *aisService;
 
