@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QList>
+#include <QDateTime>
 
 AISOutputService::AISOutputService(QObject *parent, AISTargetRepository *repo, QString cfg)
     : QObject{parent}, dataSendCounter(0), aisRepo(repo)
@@ -81,7 +82,7 @@ void AISOutputService::populateConfig(const QString cfg)
 #if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
     QStringList config_list = cfg.split(";", Qt::SkipEmptyParts);
 #else
-    QStringList config_list = config.split(";", QString::SkipEmptyParts);
+    QStringList config_list = cfg.split(";", QString::SkipEmptyParts);
 #endif
     if(config_list.size() == 4)
     {
