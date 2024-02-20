@@ -9,6 +9,7 @@ class AISOutput_WebSocketServer: public AISOutput
 {
 public:
     AISOutput_WebSocketServer(QObject *parent = nullptr, AISOutputService* service = nullptr, QString cfg = "");
+    ~AISOutput_WebSocketServer();
 
     // AISOutput interface
     void Open() override;

@@ -10,6 +10,13 @@ AISOutput_WebSocketServer::AISOutput_WebSocketServer(QObject *parent, AISOutputS
     server = nullptr;
 }
 
+AISOutput_WebSocketServer::~AISOutput_WebSocketServer()
+{
+    for (auto client : m_clients) {
+        client->close();
+    }
+}
+
 void AISOutput_WebSocketServer::onNewConnection()
 {
     QWebSocket *pSocket = server->nextPendingConnection();
@@ -58,6 +65,13 @@ void AISOutput_WebSocketServer::SendRaw(const QByteArray data)
 {
     for (auto client : m_clients) {
         client->sendBinaryMessage(data);
+    }
+
+    if (server)
+    {
+        disconnect(server, &QWebSocketServer::newConnection, this, &AISOutput_WebSocketServer::onNewConnection);
+        server->close();
+        delete server;
     }
 }
 
