@@ -86,7 +86,7 @@ void AISOutput_WebSocketServer::InitConfig()
 #if QT_VERSION > QT_VERSION_CHECK(5, 13, 0)
     QStringList config_list = m_config.split(";", Qt::SkipEmptyParts);
 #else
-    QStringList config_list = m_config.split(":", QString::SkipEmptyParts);
+    QStringList config_list = m_config.split(";", QString::SkipEmptyParts);
 #endif
     if(config_list.size() == 4)
     {
