@@ -1,14 +1,29 @@
 #include "ais_input_service.h"
 
+#ifdef USE_LOG4QT
+#include <log4qt/logger.h>
+LOG4QT_DECLARE_STATIC_LOGGER(logger, AISInputService)
+#else
+#include <QDebug>
+#endif
+
 AISInputService::AISInputService(QObject *parent, AISTargetRepository *repo)
     : QObject{parent}, aisRepo(repo)
 {
+#ifdef USE_LOG4QT
+    if(!repo) logger()->fatal("ais repo is null");
+#else
     if(!repo) qFatal("ais repo is null");
+#endif
 }
 
 void AISInputService::createOrUpdateTarget(AISLib::AISTargetData *data)
 {
-    qDebug()<<Q_FUNC_INFO<<"ais mmsi"<<data->MMSI<<data->MID<<data->Class;
+#ifdef USE_LOG4QT
+    logger()->debug()<<Q_FUNC_INFO<<" - ais mmsi: "<<data->MMSI;
+#else
+    qDebug()<<Q_FUNC_INFO<<" - ais mmsi: "<<data->MMSI;
+#endif
 
     //convert AISTargetData to AISTargetModel
 

@@ -1,9 +1,17 @@
 #include "data_input_adjuster.h"
 
-#include "qdebug.h"
+#include <QList>
 
+#ifdef USE_LOG4QT
+#include <log4qt/logger.h>
+LOG4QT_DECLARE_STATIC_LOGGER(logger, DataInputAdjuster)
+DataInputAdjuster::DataInputAdjuster(QObject *parent, char firstChar, char endChar)
+    : QObject(parent), m_firstChar(firstChar), m_endChar(endChar), start_append(false), stop_append(false) {}
+#else
+#include <QDebug>
 DataInputAdjuster::DataInputAdjuster(char firstChar, char endChar)
     : m_firstChar(firstChar), m_endChar(endChar), start_append(false), stop_append(false) {}
+#endif
 
 QList<QByteArray> DataInputAdjuster::appendAndAdjustData(QByteArray data)
 {
@@ -24,7 +32,11 @@ QList<QByteArray> DataInputAdjuster::appendAndAdjustData(QByteArray data)
             ret_string.append(buffer);
             buffer.clear();
 
-            qDebug()<<Q_FUNC_INFO<<ret_string;
+#ifdef USE_LOG4QT
+            logger()->trace()<<Q_FUNC_INFO<<" - "<<ret_string.last();
+#else
+            qDebug()<<Q_FUNC_INFO<<" - "<<ret_string.last();
+#endif
         }
     }
 

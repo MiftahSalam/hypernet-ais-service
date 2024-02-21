@@ -3,10 +3,18 @@
 
 #include <QByteArray>
 
+#ifdef USE_LOG4QT
+#include <QObject>
+class DataInputAdjuster: public QObject
+{
+public:
+    DataInputAdjuster(QObject *parent = nullptr, char firstChar = '\0', char endChar = '\0');
+#else
 class DataInputAdjuster
 {
 public:
-    DataInputAdjuster(char firstChar, char endChar);
+    DataInputAdjuster(char firstChar = '\0', char endChar = '\0');
+#endif
 
    QList<QByteArray> appendAndAdjustData(QByteArray data);
 //    QByteArray appendAndAdjustData(QByteArray data);

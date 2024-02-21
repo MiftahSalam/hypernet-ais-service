@@ -1,13 +1,22 @@
 #include "serial_device_wrapper.h"
 
-#include "qdebug.h"
+#ifdef USE_LOG4QT
+#include <log4qt/logger.h>
+LOG4QT_DECLARE_STATIC_LOGGER(logger, SerialDeviceWrapper)
+#else
+#include <QDebug>
+#endif
 
 SerialDeviceWrapper::SerialDeviceWrapper(QObject *parent):
     DeviceWrapper(parent)
 {
     m_serial = new QSerialPort(this);
 
+#ifdef USE_LOG4QT
+    logger()->trace()<<Q_FUNC_INFO;
+#else
     qDebug()<<Q_FUNC_INFO;
+#endif
 }
 
 SerialDeviceWrapper::~SerialDeviceWrapper()
@@ -34,7 +43,11 @@ bool SerialDeviceWrapper::InitConfig(const QString config)
         m_serialConfig.parity = str2parity(config_list.at(4));
         m_serialConfig.flowcontrol = str2flwCtrl(config_list.at(5));
     }
+#ifdef USE_LOG4QT
+    else logger()->fatal("invalid config %s", config.toUtf8().constData());
+#else
     else qFatal("invalid config %s", config.toUtf8().constData());
+#endif
 
     return ret_val;
 }
@@ -56,9 +69,15 @@ void SerialDeviceWrapper::Reconnect()
         m_serial->setParity(m_serialConfig.parity);
         m_serial->setFlowControl(m_serialConfig.flowcontrol);
 
-        qInfo()<<Q_FUNC_INFO<<"open serial port"<<m_serial->portName();
+#ifdef USE_LOG4QT
+        logger()->info()<<" - open serial port"<<m_serial->portName();
     }
-    else qWarning()<<Q_FUNC_INFO<<"cannot open serial with error"<<m_serial->errorString();
+    else logger()->warn()<<Q_FUNC_INFO<<" - cannot open serial with error"<<m_serial->errorString();
+#else
+        qInfo()<<" - open serial port"<<m_serial->portName();
+    }
+    else qWarning()<<Q_FUNC_INFO<<" - cannot open serial with error"<<m_serial->errorString();
+#endif
 
 }
 
@@ -80,7 +99,11 @@ void SerialDeviceWrapper::receiveData(QByteArray message)
 {
     QString payload = QString::fromUtf8(message);
 
-    qDebug()<<Q_FUNC_INFO<<"payload"<<payload;
+#ifdef USE_LOG4QT
+    logger()->debug()<<Q_FUNC_INFO<<" - payload"<<payload;
+#else
+    qDebug()<<Q_FUNC_INFO<<" - payload"<<payload;
+#endif
     m_last_data_time = QDateTime::currentSecsSinceEpoch();
     emit ReadyRead(payload);
 }
@@ -89,7 +112,11 @@ void SerialDeviceWrapper::onNativeReadyRead()
 {
     QString payload = QString::fromUtf8(m_serial->readAll());
 
-    qDebug()<<Q_FUNC_INFO<<"payload"<<payload;
+#ifdef USE_LOG4QT
+    logger()->debug()<<Q_FUNC_INFO<<" - payload"<<payload;
+#else
+    qDebug()<<Q_FUNC_INFO<<" - payload"<<payload;
+#endif
     m_last_data_time = QDateTime::currentSecsSinceEpoch();
     emit ReadyRead(payload);
 }
@@ -102,7 +129,11 @@ void SerialDeviceWrapper::ChangeConfig(const QString command)
 void SerialDeviceWrapper::Write(const QString data)
 {
     if (m_serial->isOpen() && m_serial->isWritable()) m_serial->write(data.toUtf8());
-    else qWarning()<<Q_FUNC_INFO<<"cannot write serial with error"<<m_serial->errorString();
+#ifdef USE_LOG4QT
+    else logger()->warn()<<Q_FUNC_INFO<<" - cannot write serial with error"<<m_serial->errorString();
+#else
+    else qWarning()<<Q_FUNC_INFO<<" - cannot write serial with error"<<m_serial->errorString();
+#endif
 }
 
 QSerialPort::BaudRate SerialDeviceWrapper::str2Baud(QString baud)
