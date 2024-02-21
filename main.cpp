@@ -73,7 +73,8 @@ void logShutdown()
 
 void setupRootLogger(const QString &introMessage)
 {
-    QString configFile = QCoreApplication::applicationFilePath() + QStringLiteral(".log4qt.properties");
+    QString configFile = QCoreApplication::applicationDirPath() + QDir::separator() + QStringLiteral(".log4qt.properties");
+    qDebug()<<configFile;
     if (QFile::exists(configFile))
         Log4Qt::PropertyConfigurator::configureAndWatch(configFile);
     if (!introMessage.isEmpty())
