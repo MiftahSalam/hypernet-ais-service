@@ -79,12 +79,19 @@ unix: {
     INCLUDEPATH += /usr/include/AISLib
     DEPENDPATH += /usr/include/AISLib
 
+    contains(DEFINES, USE_LOG4QT) {
+        message(Using log4qt...)
+        LIBS += -L/usr/local/log4qt/lib/ -llog4qt
+        INCLUDEPATH += /usr/local/log4qt/include
+        DEPENDPATH += /usr/local/log4qt/include
+    }
 } else:win32 {
     INCLUDEPATH +=C:\Users\miftah\hypernet\ais\dev\include
     DEPENDPATH +=C:\Users\miftah\hypernet\ais\dev\include
 
     contains(DEFINES, USE_LOG4QT) {
         message(Using log4qt...)
+        LIBS += -LC:\log4qt\lib -llog4qt
         INCLUDEPATH += C:\log4qt\include
         DEPENDPATH += C:\log4qt\include
     }
@@ -92,8 +99,3 @@ unix: {
 
 win32:CONFIG(release, debug|release): LIBS += -LC:\Users\miftah\hypernet\ais\dev\lib -lAISLib
 else:win32:CONFIG(debug, debug|release): LIBS += -LC:\Users\miftah\hypernet\ais\dev\lib -lAISLib
-
-contains(DEFINES, USE_LOG4QT) {
-    message(Using log4qt...)
-    win32: LIBS += -LC:\log4qt\lib -llog4qt
-}
