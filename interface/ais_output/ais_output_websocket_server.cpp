@@ -93,13 +93,6 @@ void AISOutput_WebSocketServer::SendRaw(const QByteArray data)
     for (auto client : m_clients) {
         client->sendBinaryMessage(data);
     }
-
-    if (server)
-    {
-        disconnect(server, &QWebSocketServer::newConnection, this, &AISOutput_WebSocketServer::onNewConnection);
-        server->close();
-        delete server;
-    }
 }
 
 void AISOutput_WebSocketServer::Close()
