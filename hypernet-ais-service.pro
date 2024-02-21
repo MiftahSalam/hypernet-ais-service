@@ -23,6 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 #MODE += DEBUG_MODE
+DEFINES += USE_LOG4QT
 
 equals(MODE,"DEBUG_MODE") {
     TARGET = ais-service-console
@@ -81,7 +82,18 @@ unix: {
 } else:win32 {
     INCLUDEPATH +=C:\Users\miftah\hypernet\ais\dev\include
     DEPENDPATH +=C:\Users\miftah\hypernet\ais\dev\include
+
+    contains(DEFINES, USE_LOG4QT) {
+        message(Using log4qt...)
+        INCLUDEPATH += C:\log4qt\include
+        DEPENDPATH += C:\log4qt\include
+    }
 }
 
 win32:CONFIG(release, debug|release): LIBS += -LC:\Users\miftah\hypernet\ais\dev\lib -lAISLib
 else:win32:CONFIG(debug, debug|release): LIBS += -LC:\Users\miftah\hypernet\ais\dev\lib -lAISLib
+
+contains(DEFINES, USE_LOG4QT) {
+    message(Using log4qt...)
+    win32: LIBS += -LC:\log4qt\lib -llog4qt
+}
